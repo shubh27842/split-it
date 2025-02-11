@@ -4,8 +4,8 @@ import ReactDOM from 'react-dom/client';
 
 const App = () => {
     return(
-        <div>
-            React app using parcel
+        <div className="text-lg text-center text-red-500">
+            React app using build tool as parcel & styling library as tailwindCSS
         </div>
     )
 };
