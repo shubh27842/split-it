@@ -16,7 +16,7 @@ export default [
   pluginJs.configs.recommended,
   pluginReact.configs.flat.recommended,
   {
-    files: ["jest.config.js"], // Apply only to Jest config files
+    files: ["jest.config.js", "babel.config.js"], // Apply only to Jest config files
     languageOptions: { globals: globals.node }, // Allow Node.js globals like `module`
   },
   {
