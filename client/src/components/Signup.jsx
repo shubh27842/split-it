@@ -1,17 +1,30 @@
 import React, { useState } from "react";
 
-const Login = () => {
+const Signup = () => {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = () => {
-    console.log("CREDS", email, password);
+  const handleSignup = () => {
+    console.log("CREDS", name, email, password);
   };
 
   return (
     <div className="shadow-sm sm:mx-[20%] mt-0 sm:mt-10 rounded-sm p-8 bg-gray-50">
-      <div className="text-3xl text-gray-800">Login</div>
-      <div className="my-4 flex flex-col">
+      <div className="text-3xl mb-4 text-gray-800">Register</div>
+      <div className="mb-4 flex flex-col">
+        <label htmlFor="input-name" className="text-lg text-gray-800">
+          Name
+        </label>
+        <input
+          type="name"
+          id="input-name"
+          className="border border-gray-400 rounded-sm indent-2 py-2 focus-visible:outline-gray-400 bg-white"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+      </div>
+      <div className="mb-2 flex flex-col">
         <label htmlFor="input-email" className="text-lg text-gray-800">
           Email
         </label>
@@ -38,14 +51,14 @@ const Login = () => {
       <div className="flex flex-col sm:flex-row justify-between items-baseline">
         <button
           className="py-1 px-4 bg-gray-800 text-gray-200 text-lg rounded-sm hover:bg-gray-900 cursor-pointer"
-          onClick={() => handleLogin()}
+          onClick={() => handleSignup()}
         >
-          Login
+          Register
         </button>
         <div>
-          New User?
+          Already registered?
           <button className="underline cursor-pointer text-blue-800 hover:text-blue-400 ml-2">
-            Register here
+            Login here
           </button>
         </div>
       </div>
@@ -53,4 +66,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Signup;

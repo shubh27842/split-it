@@ -25,11 +25,11 @@ const NavBar = () => {
             d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
           />
         </svg> */}
-        <div className=" text-white text-xl font-logo block sm:hidden">
+        <div className=" text-white text-2xl font-logo block sm:hidden">
           Split It
         </div>
       </div>
-      <div className="mr-10">
+      <div className="sm:mr-10 mr-0">
         {user ? (
           <div>
             <div className="text-gray-100 text-lg  rounded-lg px-4 py-1 sm:py-2 cursor-pointer hover:text-gray-300">

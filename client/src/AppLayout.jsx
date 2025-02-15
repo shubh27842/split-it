@@ -1,7 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import SideBar from "./SideBar";
 import NavBar from "./NavBar";
 import { AppContextProvider } from "./context/AppContext";
+import Login from "./components/Login";
+import Signup from "./components/Signup";
+import Dashboard from "./components/Dashboard";
+import Groups from "./components/Group";
 
 const AppLayout = () => {
   return (
@@ -15,13 +19,12 @@ const AppLayout = () => {
             <NavBar />
           </div>
           <div className="w-full h-9/10 max-h-9/10 bg-gray-800 p-2">
-            <div className="w-full h-full max-h-full overflow-y-scroll scrollbar  bg-white rounded-xl ">
-              <div className=" p-5">
-                <div className="h-40 bg-amber-200">CHECK</div>
-                <div className="h-40 bg-amber-200">CHECK</div>
-                <div className="h-40 bg-amber-200">CHECK</div>
-                <div className="h-40 bg-amber-200">CHECK</div>
-                <div className="h-40 bg-amber-200">CHECK</div>
+            <div className="w-full h-full max-h-full overflow-y-auto scrollbar bg-white rounded-xl ">
+              <div className="p-5">
+                {/* <Login /> */}
+                {/* <Signup />   */}
+                {/* <Dashboard /> */}
+                <Groups />
               </div>
             </div>
           </div>

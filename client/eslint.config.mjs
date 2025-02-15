@@ -36,4 +36,9 @@ export default [
       "prettier/prettier": ["error", { endOfLine: "lf" }],
     },
   },
+  {
+    rules: {
+      "react/no-unescaped-entities": "off"
+    }
+  }
 ];
