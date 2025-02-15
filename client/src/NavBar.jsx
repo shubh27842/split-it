@@ -1,7 +1,13 @@
-import React from "react";
+import React, { useContext } from "react";
+import { AppContext } from "./context/AppContext";
 
 const NavBar = () => {
-  const loggedIn = true;
+  const { store, addUser } = useContext(AppContext);
+  const { user } = store;
+  console.log(store, user);
+  const login = () => {
+    addUser({ name: "shubh" });
+  };
   return (
     <div className="flex justify-between items-center h-full">
       <div className="text-gray-100">
@@ -24,13 +30,23 @@ const NavBar = () => {
         </div>
       </div>
       <div className="mr-10">
-        {!loggedIn ? (
-          <button className="text-gray-100 text-lg  rounded-lg px-4  py-1 sm:py-2 cursor-pointer hover:text-gray-300">
-            Login
-          </button>
+        {user ? (
+          <div>
+            <div className="text-gray-100 text-lg  rounded-lg px-4 py-1 sm:py-2 cursor-pointer hover:text-gray-300">
+              Logout
+            </div>
+          </div>
         ) : (
-          <div className="text-gray-100 text-lg  rounded-lg px-4 py-1 sm:py-2 cursor-pointer hover:text-gray-300">
-            Logout
+          <div>
+            <button
+              className="text-gray-100 text-lg  rounded-lg px-4  py-1 sm:py-2 cursor-pointer hover:text-gray-300"
+              onClick={() => login()}
+            >
+              Login
+            </button>
+            <button className="bg-gray-100 px-2 py-1 rounded-lg text-gray-800 hover:bg-gray-200 cursor-pointer">
+              Signup
+            </button>
           </div>
         )}
       </div>
