@@ -1,7 +1,7 @@
 import React from "react";
 import { darkBtnMd, lightBtnMd } from "../utils/styles";
 
-const OweDetail = () => {
+export const OweDetail = () => {
   return (
     <div className="w-fit">
       <div className="flex p-2 pb-0 items-center">

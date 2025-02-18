@@ -1,12 +1,19 @@
 import React, { useState } from "react";
+import axios from "axios";
+import { apiEndPoint } from "../utils/api";
 
 const Signup = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSignup = () => {
-    console.log("CREDS", name, email, password);
+  const handleSignup = async () => {
+    const res = await axios.post(`${apiEndPoint}/auth/register`, {
+      name,
+      email,
+      password,
+      mobile: "7894561320",
+    });
   };
 
   return (

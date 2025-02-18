@@ -1,11 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 import SideBar from "./SideBar";
 import NavBar from "./NavBar";
 import { AppContextProvider } from "./context/AppContext";
-import Login from "./components/Login";
-import Signup from "./components/Signup";
-import Dashboard from "./components/Dashboard";
-import Groups from "./components/Group";
+import { Outlet } from "react-router";
 
 const AppLayout = () => {
   return (
@@ -21,10 +18,7 @@ const AppLayout = () => {
           <div className="w-full h-9/10 max-h-9/10 bg-gray-800 p-2">
             <div className="w-full h-full max-h-full overflow-y-auto scrollbar bg-white rounded-xl ">
               <div className="p-5">
-                {/* <Login /> */}
-                {/* <Signup />   */}
-                {/* <Dashboard /> */}
-                <Groups />
+                <Outlet />
               </div>
             </div>
           </div>
