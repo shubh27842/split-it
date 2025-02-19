@@ -1,5 +1,6 @@
 import React from "react";
 import { darkBtnMd, lightBtnMd } from "../utils/styles";
+import { useNavigate } from "react-router";
 
 export const OweDetail = () => {
   return (
@@ -26,13 +27,19 @@ export const OweDetail = () => {
 };
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   return (
     <div className="h-full">
       <div className="bg-gray-200 rounded-t-lg">
         <div className="flex justify-between p-2 sm:p-4 border-b-2 border-b-gray-400">
           <div className="text-xl">Dashboard</div>
           <div className="flex">
-            <button className={darkBtnMd}>Create Group</button>
+            <button
+              className={darkBtnMd}
+              onClick={() => navigate("/creategroup")}
+            >
+              Create Group
+            </button>
             <button className={lightBtnMd}>Settle up</button>
           </div>
         </div>

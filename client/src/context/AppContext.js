@@ -19,11 +19,19 @@ export const AppContextProvider = ({ children }) => {
       payload: user,
     });
   };
+
+  const removeUser = () => {
+    dispatch({
+      type: "LOGOUT",
+      payload: null,
+    });
+  };
   return (
     <AppContext.Provider
       value={{
         store: context,
-        addUser,
+        login: addUser,
+        logout: removeUser,
       }}
     >
       {children}
