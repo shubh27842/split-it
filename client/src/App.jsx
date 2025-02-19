@@ -6,6 +6,10 @@ import Login from "./components/Login";
 import Signup from "./components/Signup";
 import { AppContextProvider } from "./context/AppContext";
 import CreateGroup from "./components/CreateGroup";
+import axios from "axios";
+
+axios.defaults.headers.common["Authorization"] =
+  `Bearer ${localStorage.getItem("authToken")}`;
 
 const App = () => {
   return (

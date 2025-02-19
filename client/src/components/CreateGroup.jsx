@@ -1,19 +1,27 @@
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { apiEndPoint } from "../utils/api";
+import { AppContext } from "../context/AppContext";
 
 const CreateGroup = () => {
+  const { store } = useContext(AppContext);
   const [groupName, setGroupName] = useState("");
-  const handleCreateGroup = async () => {
-    // try {
-    //   const res = await axios.post(`${apiEndPoint}/group/createGroup`, {});
-    // } catch (err) {
-    //   console.log(err);
-    // }
+  const handleCreateGroup = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await axios.post(`${apiEndPoint}/group/createGroup`, {
+        groupName,
+        members: [],
+        groupOwner: store.user.id,
+      });
+      console.log("RES", res);
+    } catch (err) {
+      console.log(err);
+    }
   };
   return (
     <form
-      onSubmit={() => handleCreateGroup()}
+      onSubmit={(e) => handleCreateGroup(e)}
       className="bg-gray-100 rounded-lg p-2 sm:p-8 border-gray-700 border-2"
     >
       <div className="flex mb-4">
