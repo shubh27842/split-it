@@ -26,17 +26,47 @@ exports.login = async (req, res, next) => {
     if (!user) {
       return res.status(400).json("Invalid credentials");
     }
-    const isMatch = await user.matchPassword(password);
-    if (!isMatch) {
-      return res.status(401).json({ message: "Invalid credentials" });
-    }
+	if (!user.password) {
+		if (!password) {
+		  return res.status(400).json({ message: "Password is required for first-time login" });
+		}
+		user.password = await bcrypt.hash(password, 10);
+		await user.save();
+	  } else {
+		const isMatch = await user.matchPassword(password);
+		if (!isMatch) {
+		  return res.status(401).json({ message: "Invalid credentials" });
+		}
+	  }
+    // const isMatch = await user.matchPassword(password);
+    // if (!isMatch) {
+    //   return res.status(401).json({ message: "Invalid credentials" });
+    // }
 
     sendTokenResponse(user, 200, res);
   } catch (err) {
     console.log("ERROR", err);
-    res.status(400).json({ success: false, message: err });
+    res.status(500).json({ success: false, message: err });
   }
 };
+
+exports.createMember = async (req, res) => {
+	try {
+	  const {name, email } = req.body;
+	  if (!email) {
+		return res.status(400).json({ message: "Email is required" });
+	  }
+	  let existingUser = await User.findOne({ email });
+	  if (existingUser) {
+		return res.status(400).json({ message: "User already exists" });
+	  }
+	  const user = new User({ name, email });
+	  await user.save();
+	  res.status(201).json({ message: "Member created successfully", user: { email: user.email, _id: user._id } });
+	} catch (error) {
+	  res.status(500).json({ error: error.message });
+	}
+  };
 
 const sendTokenResponse = (user, statusCode, res) => {
   const token = user.getSignedJwtToken();

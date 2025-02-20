@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useContext, useState } from "react";
 import { apiEndPoint } from "../utils/api";
 import { AppContext } from "../context/AppContext";
+import CustomMultiSelect from "./CustomMultiSelect";
 
 const CreateGroup = () => {
   const { store } = useContext(AppContext);
@@ -44,6 +45,12 @@ const CreateGroup = () => {
           id="group-name"
           type="text"
           className="ml-4 focus-visible:outline-gray-400 outline-gray-400 outline-2 rounded-sm p-2 flex-1 bg-gray-50 "
+        />
+      </div>
+      <div>
+        <label htmlFor="members" className="text-lg w-32 p-2">Members:</label>
+        <CustomMultiSelect
+            id="members"
         />
       </div>
       <div className="flex justify-center mt-8">
