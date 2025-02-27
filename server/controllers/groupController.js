@@ -85,7 +85,17 @@ exports.getGroupById = async (req, res) => {
       ])
       .sort({ createdAt: -1 });
 
-    res.status(200).json({  success: true, group: { ...group.toObject(), expenses} });
+      let netBalance = 0;
+      expenses?.forEach((expense) => {
+          const eachShare = expense.amount / expense.participants.length;
+            if(expense.paidBy._id.equals(req.user._id)){
+                netBalance += expense.amount - eachShare;
+            }else{
+                netBalance -= eachShare;
+            }
+      });
+
+    res.status(200).json({  success: true, group: { ...group.toObject(), expenses, netBalance: Number(netBalance).toFixed(2)} });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

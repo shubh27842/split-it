@@ -7,7 +7,7 @@ exports.protect = async (req, res, next) => {
 	if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
 		token = req.headers.authorization.split(' ')[1]
 	}
-	console.log(req);
+	// console.log(req);
 	//Make sure token exists
 	if (!token || token == 'null') {
 		return res.status(401).json({ success: false, message: 'Not authorize to access this route' })
@@ -19,7 +19,7 @@ exports.protect = async (req, res, next) => {
 		req.user = await User.findById(decoded.id)
 		next()
 	} catch (err) {
-		console.log("ERR",err.stack)
+		// console.log("ERR",err.stack)
 		return res.status(401).json({ success: false, message: 'Not authorize to access this route' })
 	}
 }

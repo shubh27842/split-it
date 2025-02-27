@@ -17,7 +17,7 @@ exports.updateExpense = async (req, res) => {
         const expense = await Expense.findByIdAndUpdate(expenseId,{
             expenseName, amount, paidBy, participants
         }, { new: true});
-        console.log(expense);
+        // console.log(expense);
         if (!expense) return res.status(404).json({ message: "Expense not found" });
         res.json({ message: "Expense updated successfully", expense });
     }catch(err){
