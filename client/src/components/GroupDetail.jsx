@@ -18,7 +18,7 @@ const GroupDetail = () => {
     amount: 0,
     paidBy: store?.user?.id,
     participants: [],
-    group: groupId
+    group: groupId,
   });
   const [expenseParticipants, setExpenseParticipants] = useState([]);
   const fetchGroup = async () => {
@@ -75,10 +75,11 @@ const GroupDetail = () => {
       </div>
       <div className="border-2 border-gray-400 p-1 sm:p-4 rounded-b-lg">
         <div className="font-medium">Febraury, 2025</div>
-        <ExpenseDetail index={0} lent={true} />
-        <ExpenseDetail index={1} />
-        <ExpenseDetail index={2} />
-        <ExpenseDetail index={3} lent={true} />
+        {group?.expenses?.map((expense, index) => {
+          return (
+            <ExpenseDetail key={expense._id} index={index} data={expense} />
+          );
+        })}
       </div>
       <CustomModal isOpen={modalOpen} onClose={() => setModalOpen(false)}>
         <h2 className="text-xl font-semibold mt-4">Add Expense</h2>

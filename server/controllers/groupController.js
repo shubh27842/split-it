@@ -84,9 +84,8 @@ exports.getGroupById = async (req, res) => {
         },
       ])
       .sort({ createdAt: -1 });
-    group.expenses = expenses;
 
-    res.json({ group, expenses });
+    res.status(200).json({  success: true, group: { ...group.toObject(), expenses} });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

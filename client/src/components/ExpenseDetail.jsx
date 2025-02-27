@@ -1,18 +1,26 @@
+import dayjs from "dayjs";
 import PropTypes from "prop-types";
-import React from "react";
+import React, { useContext } from "react";
+import { AppContext } from "../context/AppContext";
+import { borrowLentText, paidByText } from "../utils/utils";
 
-const ExpenseDetail = ({ index, lent }) => {
+const ExpenseDetail = ({ index, data }) => {
+  const { store } = useContext(AppContext);
+
   return (
     <div
       className={`grid grid-cols-5 p-1 sm:p-2 text-xs sm:text-base ${index % 2 ? "" : "bg-gray-100"}`}
     >
-      <div className="">10-Feb-2025</div>
-      <div className="font-medium">Expense Name</div>
-      <div>You paid Rs 200</div>
-      {lent ? (
-        <div className="text-green-600">You lent Rs 200</div>
-      ) : (
-        <div className="text-orange-600">You borrowed Rs 200</div>
+      <div className="">
+        {dayjs(data?.createdAt?.split("T")[0]).format("DD-MMM-YYYY")}
+      </div>
+      <div className="font-medium">{data?.expenseName}</div>
+      <div>{paidByText(store?.user, data?.paidBy, data?.amount)}</div>
+      {borrowLentText(
+        store?.user,
+        data?.paidBy,
+        data?.participants,
+        data?.amount
       )}
 
       <div className="ml-auto flex items-center">
