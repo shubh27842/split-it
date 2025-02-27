@@ -25,6 +25,8 @@ const Login = () => {
         localStorage.setItem("authUser", JSON.stringify(res?.data?.user));
         navigate("/");
         setErrorMsg("");
+        axios.defaults.headers.common["Authorization"] =
+          `Bearer ${res?.data?.token}`;
       }
     } catch (err) {
       console.log(err);

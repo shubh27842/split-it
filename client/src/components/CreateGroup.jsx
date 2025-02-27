@@ -1,25 +1,50 @@
 import axios from "axios";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { apiEndPoint } from "../utils/api";
 import { AppContext } from "../context/AppContext";
 import CustomMultiSelect from "./CustomMultiSelect";
+import { useNavigate } from "react-router";
 
 const CreateGroup = () => {
   const { store } = useContext(AppContext);
+  const navigate = useNavigate();
   const [groupName, setGroupName] = useState("");
+  const [members, setMembers] = useState([]);
+  const [allMembers, setAllMembers] = useState([]);
   const handleCreateGroup = async (e) => {
     e.preventDefault();
     try {
       const res = await axios.post(`${apiEndPoint}/group/createGroup`, {
         groupName,
-        members: [],
+        members: [...members, store.user.id],
         groupOwner: store.user.id,
       });
       console.log("RES", res);
+      navigate("/group" + res.data.group._id);
     } catch (err) {
       console.log(err);
     }
   };
+
+  const fetchAllMembers = async () => {
+    try {
+      const res = await axios.get(`${apiEndPoint}/auth/getAllUser`);
+      console.log("Res", res);
+      setAllMembers(
+        res.data.users
+          .map((user) => ({ label: user.name, value: user._id }))
+          .filter((user) => user.value !== store.user.id)
+      );
+      return res;
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    fetchAllMembers();
+  }, []);
+
   return (
     <form
       onSubmit={(e) => handleCreateGroup(e)}
@@ -47,10 +72,16 @@ const CreateGroup = () => {
           className="ml-4 focus-visible:outline-gray-400 outline-gray-400 outline-2 rounded-sm p-2 flex-1 bg-gray-50 "
         />
       </div>
-      <div>
-        <label htmlFor="members" className="text-lg w-32 p-2">Members:</label>
+      <div className="flex mt-4">
+        <label htmlFor="members" className="text-lg w-32 p-2 ">
+          Members:
+        </label>
         <CustomMultiSelect
-            id="members"
+          id="members"
+          options={allMembers}
+          selected={members}
+          onChange={setMembers}
+          className="flex-1"
         />
       </div>
       <div className="flex justify-center mt-8">

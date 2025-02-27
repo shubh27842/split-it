@@ -7,6 +7,8 @@ import Signup from "./components/Signup";
 import { AppContextProvider } from "./context/AppContext";
 import CreateGroup from "./components/CreateGroup";
 import axios from "axios";
+import GroupDetail from "./components/GroupDetail";
+import Groups from "./components/Groups";
 
 axios.defaults.headers.common["Authorization"] =
   `Bearer ${localStorage.getItem("authToken")}`;
@@ -21,6 +23,8 @@ const App = () => {
             <Route path="login" element={<Login />} />
             <Route path="register" element={<Signup />} />
             <Route path="creategroup" element={<CreateGroup />} />
+            <Route path="groups" element={<Groups />} />
+            <Route path="group/:groupId" element={<GroupDetail />} />
           </Route>
         </Routes>
       </AppContextProvider>

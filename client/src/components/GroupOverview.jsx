@@ -1,10 +1,13 @@
 import PropTypes from "prop-types";
 import React from "react";
+// import { useNavigate } from "react-router";
 
-const GroupOverview = ({ groupDetail }) => {
+const GroupOverview = ({ groupDetail, group, navigate }) => {
+  // const navigate = useNavigate();
   return (
     <div
       className={`flex border border-gray-400 rounded-lg p-1 sm:p-2 ${groupDetail && "bg-gray-200 rounded-b-none"}`}
+      onClick={() => navigate(`/group/${group._id}`)}
     >
       <div
         className={`w-20 h-20 rounded-md flex justify-center items-center ${groupDetail ? "bg-violet-200" : "bg-gray-200"}`}
@@ -25,7 +28,7 @@ const GroupOverview = ({ groupDetail }) => {
         </svg>
       </div>
       <div className="ml-2">
-        <div className="text-lg">Group Name</div>
+        <div className="text-lg">{group?.groupName}</div>
         <div className="text-sm text-gray-800">You owe Rs 1000</div>
         <ul className="list-disc list-inside text-xs text-gray-500">
           <li>You owe Pratik Rs 400</li>

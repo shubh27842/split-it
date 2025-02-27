@@ -33,12 +33,13 @@ export default [
     plugins: { prettier: pluginPrettier },
     rules: {
       ...pluginPrettier.configs.recommended.rules,
-      "prettier/prettier": ["error", { endOfLine: "lf" }],
+      "prettier/prettier": ["error", { endOfLine: "lf", trailingComma: "none" }],
     },
   },
   {
     rules: {
-      "react/no-unescaped-entities": "off"
+      "react/no-unescaped-entities": "off",
+      "react/prop-types": "off",
     }
   }
 ];

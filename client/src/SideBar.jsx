@@ -1,10 +1,17 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router";
 
 const SideBar = () => {
   const [selectedTab, setSelectedTab] = useState("dashboard");
+  const navigate = useNavigate();
 
   const handleTabSelection = (tab) => {
     setSelectedTab(tab);
+    if (tab === "dashboard") {
+      navigate("/");
+    } else if (tab === "groups") {
+      navigate("/groups");
+    }
   };
 
   const tabClass = (tab) => {

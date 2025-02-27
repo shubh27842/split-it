@@ -11,6 +11,7 @@ const NavBar = () => {
   const handleLogout = () => {
     localStorage.clear();
     logout();
+    window.location.reload();
   };
   return (
     <div className="flex justify-between items-center h-full">
