@@ -1,7 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
 
-const CustomMultiSelect = ({ id, options, selected, onChange }) => {
+const CustomMultiSelect = ({
+  id,
+  options,
+  selected,
+  onChange,
+  disabled = false,
+}) => {
   const [showOptions, setShowOptions] = useState(false);
   const [modifiedOptions, setModifiedOptions] = useState(options);
   const searchBox = useRef();
@@ -21,6 +27,7 @@ const CustomMultiSelect = ({ id, options, selected, onChange }) => {
   }, []);
 
   const handleRemoveSelected = (value) => {
+    if (disabled) return;
     setShowOptions(true);
     onChange((selected) => selected.filter((item) => item !== value));
   };
@@ -39,8 +46,8 @@ const CustomMultiSelect = ({ id, options, selected, onChange }) => {
     } else {
       const filteredOptions = options.filter((v) =>
         Object.values(v).some((v) =>
-          v.toString().toLowerCase().includes(query.toString().toLowerCase()),
-        ),
+          v.toString().toLowerCase().includes(query.toString().toLowerCase())
+        )
       );
       setModifiedOptions(filteredOptions);
     }
@@ -70,7 +77,7 @@ const CustomMultiSelect = ({ id, options, selected, onChange }) => {
                 viewBox="0 0 24 24"
                 strokeWidth={1.5}
                 stroke="currentColor"
-                className="size-4 mx-2 cursor-pointer hover:text-gray-600"
+                className={`size-4 mx-2 hover:text-gray-600 ${disabled ? "cursor-not-allowed" : "cursor-pointer"}`}
                 onClick={() => handleRemoveSelected(value)}
               >
                 <path
@@ -89,6 +96,7 @@ const CustomMultiSelect = ({ id, options, selected, onChange }) => {
         onFocus={() => setShowOptions(true)}
         // onBlur={() => setShowOptions(false)}
         onChange={(e) => handleInputSearch(e.target.value)}
+        disabled={disabled}
       />
       {showOptions && (
         <ul className="absolute top-11 left-0 border-gray-400 border-2 rounded-md bg-white w-full p-2">
@@ -152,7 +160,7 @@ CustomMultiSelect.propTypes = {
     PropTypes.shape({
       label: PropTypes.string.isRequired,
       value: PropTypes.string.isRequired,
-    }),
+    })
   ).isRequired,
   selected: PropTypes.arrayOf(PropTypes.string).isRequired,
   onChange: PropTypes.func.isRequired,

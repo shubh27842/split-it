@@ -15,6 +15,7 @@ const Groups = () => {
       const res = await axios(
         `${apiEndPoint}/group/getGroupsByUser?userId=${store.user.id}`
       );
+      console.log("hhhhhhh");
       console.log("GROUPS", res.data);
       setGroups(res.data);
     } catch (err) {

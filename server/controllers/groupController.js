@@ -85,18 +85,102 @@ exports.getGroupById = async (req, res) => {
       ])
       .sort({ createdAt: -1 });
 
-      let netBalance = 0;
-      expenses?.forEach((expense) => {
-          const eachShare = expense.amount / expense.participants.length;
-            if(expense.paidBy._id.equals(req.user._id)){
-                netBalance += expense.amount - eachShare;
-            }else{
-                netBalance -= eachShare;
-            }
-      });
+    let netBalance = 0;
+    expenses?.forEach((expense) => {
+      const eachShare = expense.amount / expense.participants.length;
+      if (expense.paidBy._id.equals(req.user._id)) {
+        netBalance += expense.amount - eachShare;
+      } else {
+        netBalance -= eachShare;
+      }
+    });
 
-    res.status(200).json({  success: true, group: { ...group.toObject(), expenses, netBalance: Number(netBalance).toFixed(2)} });
+    res.status(200).json({
+      success: true,
+      group: {
+        ...group.toObject(),
+        expenses,
+        netBalance: Number(netBalance).toFixed(2),
+      },
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+};
+
+exports.getExpenseSummaryByGroup = async (req, res) => {
+  try {
+    const { groupId } = req.query;
+
+    // Fetch the group and its members
+    const group = await Group.findById(groupId).populate({
+      path: "members",
+      select: "name email",
+    });
+
+    if (!group) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Group not found" });
+    }
+
+    // Fetch all expenses for the group
+    const expenses = await Expense.find({ group: groupId })
+      .populate([
+        {
+          path: "paidBy",
+          select: "name email",
+        },
+        {
+          path: "participants",
+          select: "name email",
+        },
+      ])
+      .sort({ createdAt: -1 });
+
+    // Step 1: Initialize balance tracking for all members
+    let balances = {};
+    group.members.forEach((member) => {
+      balances[member._id] = {
+        name: member.name,
+        email: member.email,
+        netBalance: 0,
+        oweDetails: group.members
+          ?.filter((m) => !m._id.equals(member._id))
+          .map((m) => ({ ...m.toObject(), amount: 0 })),
+      };
+    });
+
+    // Step 2: Process each expense
+    expenses.forEach((expense) => {
+      const splitAmount = expense.amount / expense.participants.length;
+
+      // Add amount to payer
+      balances[expense.paidBy._id].netBalance += expense.amount;
+
+      // Subtract amount from each member who owes
+      expense.participants.forEach((member) => {
+        balances[member._id].netBalance -= splitAmount;
+        balances[expense.paidBy._id].oweDetails = balances[expense.paidBy._id].oweDetails.map((owe) => {
+            if(owe._id.equals(member._id)){
+                return { ...owe, amount: owe.amount + splitAmount }
+            }
+            return owe;
+        })
+        balances[member._id].oweDetails = balances[member._id].oweDetails.map((owe) => {
+            if(owe._id.equals(expense.paidBy._id)){
+                return { ...owe, amount: owe.amount - splitAmount }
+            }
+            return owe;
+        })
+        });
+    });
+
+    res.status(200).json({
+      success: true,
+      balances
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
   }
 };

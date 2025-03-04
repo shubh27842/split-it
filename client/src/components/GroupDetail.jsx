@@ -7,12 +7,15 @@ import { apiEndPoint } from "../utils/api";
 import CustomModal from "./CustomModal";
 import { AppContext } from "../context/AppContext";
 import CustomMultiSelect from "./CustomMultiSelect.jsx";
+import ExpenseModal from "./ExpenseModal.jsx";
+import BalanceModal from "./BalanceModal.jsx";
 
 const GroupDetail = () => {
   const { groupId } = useParams();
   const { store } = useContext(AppContext);
   const [group, setGroup] = useState();
   const [modalOpen, setModalOpen] = useState(false);
+  const [balanceModalOpen, setBalanceModalOpen] = useState(false);
   const [expense, setExpense] = useState({
     expenseName: "",
     amount: 0,
@@ -56,6 +59,10 @@ const GroupDetail = () => {
     }
     setModalOpen(false);
   };
+
+  const handleBalanceModal = async () => {
+    setBalanceModalOpen(true);
+  };
   return (
     <div>
       <GroupOverview groupDetail={true} group={group} />
@@ -63,7 +70,10 @@ const GroupDetail = () => {
         <button className="text-xs sm:text-base px-1 sm:px-2 py-1 sm:py-2 cursor-pointer bg-green-400 hover:bg-green-500 text-white rounded-md">
           Settle up
         </button>
-        <button className="text-xs sm:text-base px-1 sm:px-2 py-1 sm:py-2 cursor-pointer bg-blue-400 hover:bg-blue-500 text-white rounded-md">
+        <button
+          onClick={() => handleBalanceModal()}
+          className="text-xs sm:text-base px-1 sm:px-2 py-1 sm:py-2 cursor-pointer bg-blue-400 hover:bg-blue-500 text-white rounded-md"
+        >
           Balances
         </button>
         <button
@@ -73,15 +83,39 @@ const GroupDetail = () => {
           Add Expense
         </button>
       </div>
-      <div className="border-2 border-gray-400 p-1 sm:p-4 rounded-b-lg">
-        <div className="font-medium">Febraury, 2025</div>
-        {group?.expenses?.map((expense, index) => {
-          return (
-            <ExpenseDetail key={expense._id} index={index} data={expense} />
-          );
-        })}
-      </div>
-      <CustomModal isOpen={modalOpen} onClose={() => setModalOpen(false)}>
+      {group?.expenses?.length === 0 ? (
+        <div className="border-2 border-gray-400 p-1 sm:p-4 rounded-b-lg">
+          <div className="text-center text-gray-400">No expenses added yet</div>
+        </div>
+      ) : (
+        <div className="border-2 border-gray-400 p-1 sm:p-4 rounded-b-lg">
+          <div className="font-medium">Febraury, 2025</div>
+          {group?.expenses?.map((expense, index) => {
+            return (
+              <ExpenseDetail key={expense._id} index={index} data={expense} />
+            );
+          })}
+        </div>
+      )}
+      <ExpenseModal
+        expense={expense}
+        setExpense={setExpense}
+        expenseParticipants={expenseParticipants}
+        setExpenseParticipants={setExpenseParticipants}
+        isOpen={modalOpen}
+        setIsOpen={setModalOpen}
+        members={group?.members}
+        type="add"
+      />
+      {balanceModalOpen && (
+        <BalanceModal
+          isOpen={balanceModalOpen}
+          setIsOpen={setBalanceModalOpen}
+          groupId={groupId}
+        />
+      )}
+
+      {/* <CustomModal isOpen={modalOpen} onClose={() => setModalOpen(false)}>
         <h2 className="text-xl font-semibold mt-4">Add Expense</h2>
         <form className="text-gray-800 " onSubmit={(e) => handleExpenseAdd(e)}>
           <div className="flex flex-col mt-4">
@@ -151,7 +185,7 @@ const GroupDetail = () => {
             </button>
           </div>
         </form>
-      </CustomModal>
+      </CustomModal> */}
     </div>
   );
 };

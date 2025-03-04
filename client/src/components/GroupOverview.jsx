@@ -29,7 +29,17 @@ const GroupOverview = ({ groupDetail, group, navigate }) => {
       </div>
       <div className="ml-2">
         <div className="text-lg">{group?.groupName}</div>
-        <div className="text-sm text-gray-800">You owe Rs 1000</div>
+        {group?.netBalance === 0 ? (
+          <div className="text-sm text-gray-800">All settled up</div>
+        ) : group?.netBalance < 0 ? (
+          <div className="text-sm text-gray-800">
+            You owe Rs {group?.netBalance} overall
+          </div>
+        ) : (
+          <div className="text-sm text-gray-800">
+            You are owed Rs {group?.netBalance} overall
+          </div>
+        )}
         <ul className="list-disc list-inside text-xs text-gray-500">
           <li>You owe Pratik Rs 400</li>
           <li>Pratik owe's you Rs 400 </li>

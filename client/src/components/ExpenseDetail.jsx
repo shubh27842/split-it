@@ -1,11 +1,16 @@
 import dayjs from "dayjs";
 import PropTypes from "prop-types";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { AppContext } from "../context/AppContext";
 import { borrowLentText, paidByText } from "../utils/utils";
+import ExpenseModal from "./ExpenseModal";
 
 const ExpenseDetail = ({ index, data }) => {
+  console.log("DATA", data);
   const { store } = useContext(AppContext);
+  const [viewModal, setViewModal] = useState(false);
+  const [modalType, setModalType] = useState("view");
+  const [expense, setExpense] = useState(data);
 
   return (
     <div
@@ -24,7 +29,13 @@ const ExpenseDetail = ({ index, data }) => {
       )}
 
       <div className="ml-auto flex items-center">
-        <button className="hover:text-blue-400 text-blue-600 cursor-pointer mx-1 sm:mx-2">
+        <button
+          className="hover:text-blue-400 text-blue-600 cursor-pointer mx-1 sm:mx-2"
+          onClick={() => {
+            setViewModal(true);
+            setModalType("view");
+          }}
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -45,7 +56,13 @@ const ExpenseDetail = ({ index, data }) => {
             />
           </svg>
         </button>
-        <button className="hover:text-gray-400 text-gray-600 cursor-pointer mx-1 sm:mx-2">
+        <button
+          className="hover:text-gray-400 text-gray-600 cursor-pointer mx-1 sm:mx-2"
+          onClick={() => {
+            setViewModal(true);
+            setModalType("update");
+          }}
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -62,13 +79,25 @@ const ExpenseDetail = ({ index, data }) => {
           </svg>
         </button>
       </div>
+      <ExpenseModal
+        expense={expense}
+        setExpense={setExpense}
+        expenseParticipants={data.participants?.map(
+          (participant) => participant._id
+        )}
+        // setExpenseParticipants={setExpenseParticipants}
+        isOpen={viewModal}
+        setIsOpen={setViewModal}
+        members={data.participants}
+        type={modalType}
+      />
     </div>
   );
 };
 
 ExpenseDetail.propTypes = {
   index: PropTypes.number.isRequired,
-  lent: PropTypes.bool.isRequired,
+  lent: PropTypes.bool.isRequired
 };
 
 export default ExpenseDetail;
