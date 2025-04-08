@@ -1,8 +1,8 @@
 import React from "react";
 import CustomModal from "./CustomModal";
-import CustomMultiSelect from "./CustomMultiSelect";
+import CustomMultiSelect from "../CustomMultiSelect";
 import axios from "axios";
-import { apiEndPoint } from "../utils/api";
+import { apiEndPoint } from "../../utils/api";
 
 const ExpenseModal = ({
   isOpen,
@@ -13,6 +13,7 @@ const ExpenseModal = ({
   setExpenseParticipants,
   members,
   type,
+  handleRefresh,
 }) => {
   const handleExpenseAdd = async (e) => {
     e.preventDefault();
@@ -27,6 +28,7 @@ const ExpenseModal = ({
           participants: expenseParticipants,
         });
         console.log(res.data);
+        handleRefresh();
       } catch (err) {
         console.log(err);
       }
@@ -38,6 +40,7 @@ const ExpenseModal = ({
           participants: expenseParticipants,
         });
         console.log(res.data);
+        handleRefresh();
       } catch (err) {
         console.log(err);
       }

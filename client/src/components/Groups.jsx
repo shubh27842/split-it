@@ -10,14 +10,18 @@ const Groups = () => {
   const { store } = useContext(AppContext);
   const navigate = useNavigate();
   const [groups, setGroups] = useState([]);
+  const [overallBalance, setOverallBalance] = useState(0);
   const fetchAllGroups = async () => {
     try {
       const res = await axios(
         `${apiEndPoint}/group/getGroupsByUser?userId=${store.user.id}`
       );
-      console.log("hhhhhhh");
-      console.log("GROUPS", res.data);
-      setGroups(res.data);
+      setGroups(res.data.groups);
+      const overallBal = res.data.groups.reduce((acc, group) => {
+        acc = Number(group?.netBalance) + acc;
+        return acc;
+      }, 0);
+      setOverallBalance(Number(overallBal).toFixed(2));
     } catch (err) {
       console.log(err);
     }
@@ -38,7 +42,16 @@ const Groups = () => {
             Create Group
           </button>
         </div>
-        <div className="text-sm  mt-2">Overall, you owe Rs 1000</div>
+        <div className="text-sm  mt-2">
+          Overall, you owe{" "}
+          <span
+            className={
+              overallBalance > 0 ? "text-green-400" : "text-orange-600"
+            }
+          >
+            Rs {overallBalance}
+          </span>
+        </div>
       </div>
       <div className="border-2 border-gray-400 rounded-b-lg p-2 sm:p-4 grid grid-cols-1 sm:grid-cols-2 gap-4 mb-12">
         {groups.map((group) => {
@@ -51,14 +64,6 @@ const Groups = () => {
             />
           );
         })}
-        {/* <GroupOverview />
-        <GroupOverview />
-        <GroupOverview />
-        <GroupOverview />
-        <GroupOverview />
-        <GroupOverview />
-        <GroupOverview />
-        <GroupOverview /> */}
       </div>
     </div>
   );

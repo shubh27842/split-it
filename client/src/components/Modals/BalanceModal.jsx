@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import CustomModal from "./CustomModal";
-import { apiEndPoint } from "../utils/api";
+import { apiEndPoint } from "../../utils/api";
 import axios from "axios";
 
 const BalanceModal = ({ isOpen, setIsOpen, groupId }) => {
@@ -11,7 +11,6 @@ const BalanceModal = ({ isOpen, setIsOpen, groupId }) => {
       const res = await axios.get(
         `${apiEndPoint}/group/getBalanceSummary?groupId=${groupId}`
       );
-      console.log(Object.values(res.data.balances));
       setBalances(Object.values(res.data.balances));
     } catch (err) {
       console.log(err);
@@ -26,13 +25,16 @@ const BalanceModal = ({ isOpen, setIsOpen, groupId }) => {
         <h2 className="text-xl font-semibold">Balances</h2>
         {balances.map((balance) => {
           return (
-            <div key={balance?.email}>
+            <div
+              key={balance?.email}
+              className="border-2 my-2 p-1 rounded-sm border-gray-400 text-gray-800"
+            >
               {balance?.netBalance > 0 ? (
                 <div>
                   {balance?.name} gets back{" "}
                   <span className="text-green-400">
                     Rs {Number(balance?.netBalance).toFixed(2)}
-                  </span>
+                  </span>{" "}
                   in total
                 </div>
               ) : (

@@ -4,11 +4,12 @@ import ExpenseDetail from "./ExpenseDetail";
 import { useParams } from "react-router";
 import axios from "axios";
 import { apiEndPoint } from "../utils/api";
-import CustomModal from "./CustomModal";
+import CustomModal from "./Modals/CustomModal.jsx";
 import { AppContext } from "../context/AppContext";
 import CustomMultiSelect from "./CustomMultiSelect.jsx";
-import ExpenseModal from "./ExpenseModal.jsx";
-import BalanceModal from "./BalanceModal.jsx";
+import ExpenseModal from "./Modals/ExpenseModal.jsx";
+import BalanceModal from "./Modals/BalanceModal.jsx";
+import SettleUpModal from "./Modals/SettleUpModal.jsx";
 
 const GroupDetail = () => {
   const { groupId } = useParams();
@@ -16,6 +17,7 @@ const GroupDetail = () => {
   const [group, setGroup] = useState();
   const [modalOpen, setModalOpen] = useState(false);
   const [balanceModalOpen, setBalanceModalOpen] = useState(false);
+  const [settleMpdalOpen, setSettleModalOpen] = useState(false);
   const [expense, setExpense] = useState({
     expenseName: "",
     amount: 0,
@@ -46,28 +48,21 @@ const GroupDetail = () => {
     setModalOpen(true);
   };
 
-  const handleExpenseAdd = async (e) => {
-    e.preventDefault();
-    try {
-      const res = await axios.post(`${apiEndPoint}/expense/createExpense`, {
-        ...expense,
-        participants: expenseParticipants,
-      });
-      console.log(res.data);
-    } catch (err) {
-      console.log(err);
-    }
-    setModalOpen(false);
-  };
-
   const handleBalanceModal = async () => {
     setBalanceModalOpen(true);
+  };
+
+  const handleRefresh = () => {
+    fetchGroup();
   };
   return (
     <div>
       <GroupOverview groupDetail={true} group={group} />
       <div className="border-2 border-gray-400 my-2 sm:my-4 p-1 sm:p-4 grid grid-cols-3 gap-2 sm:gap-6">
-        <button className="text-xs sm:text-base px-1 sm:px-2 py-1 sm:py-2 cursor-pointer bg-green-400 hover:bg-green-500 text-white rounded-md">
+        <button
+          onClick={() => setSettleModalOpen(true)}
+          className="text-xs sm:text-base px-1 sm:px-2 py-1 sm:py-2 cursor-pointer bg-green-400 hover:bg-green-500 text-white rounded-md"
+        >
           Settle up
         </button>
         <button
@@ -92,7 +87,12 @@ const GroupDetail = () => {
           <div className="font-medium">Febraury, 2025</div>
           {group?.expenses?.map((expense, index) => {
             return (
-              <ExpenseDetail key={expense._id} index={index} data={expense} />
+              <ExpenseDetail
+                key={expense._id}
+                index={index}
+                data={expense}
+                handleRefresh={handleRefresh}
+              />
             );
           })}
         </div>
@@ -106,6 +106,7 @@ const GroupDetail = () => {
         setIsOpen={setModalOpen}
         members={group?.members}
         type="add"
+        handleRefresh={handleRefresh}
       />
       {balanceModalOpen && (
         <BalanceModal
@@ -114,7 +115,12 @@ const GroupDetail = () => {
           groupId={groupId}
         />
       )}
-
+      {settleMpdalOpen && (
+        <SettleUpModal
+          isOpen={settleMpdalOpen}
+          setIsOpen={setSettleModalOpen}
+        />
+      )}
       {/* <CustomModal isOpen={modalOpen} onClose={() => setModalOpen(false)}>
         <h2 className="text-xl font-semibold mt-4">Add Expense</h2>
         <form className="text-gray-800 " onSubmit={(e) => handleExpenseAdd(e)}>

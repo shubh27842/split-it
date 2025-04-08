@@ -3,10 +3,9 @@ import PropTypes from "prop-types";
 import React, { useContext, useState } from "react";
 import { AppContext } from "../context/AppContext";
 import { borrowLentText, paidByText } from "../utils/utils";
-import ExpenseModal from "./ExpenseModal";
+import ExpenseModal from "./Modals/ExpenseModal";
 
-const ExpenseDetail = ({ index, data }) => {
-  console.log("DATA", data);
+const ExpenseDetail = ({ index, data, handleRefresh }) => {
   const { store } = useContext(AppContext);
   const [viewModal, setViewModal] = useState(false);
   const [modalType, setModalType] = useState("view");
@@ -90,6 +89,7 @@ const ExpenseDetail = ({ index, data }) => {
         setIsOpen={setViewModal}
         members={data.participants}
         type={modalType}
+        handleRefresh={handleRefresh}
       />
     </div>
   );
@@ -97,7 +97,7 @@ const ExpenseDetail = ({ index, data }) => {
 
 ExpenseDetail.propTypes = {
   index: PropTypes.number.isRequired,
-  lent: PropTypes.bool.isRequired
+  lent: PropTypes.bool.isRequired,
 };
 
 export default ExpenseDetail;

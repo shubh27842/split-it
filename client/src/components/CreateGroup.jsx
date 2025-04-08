@@ -20,7 +20,7 @@ const CreateGroup = () => {
         groupOwner: store.user.id,
       });
       console.log("RES", res);
-      navigate("/group" + res.data.group._id);
+      navigate("/group/" + res.data.group._id);
     } catch (err) {
       console.log(err);
     }

@@ -2,8 +2,9 @@ import PropTypes from "prop-types";
 import React from "react";
 // import { useNavigate } from "react-router";
 
-const GroupOverview = ({ groupDetail, group, navigate }) => {
+const GroupOverview = ({ groupDetail, group = { balance: {} }, navigate }) => {
   // const navigate = useNavigate();
+  const { balance } = group;
   return (
     <div
       className={`flex border border-gray-400 rounded-lg p-1 sm:p-2 ${groupDetail && "bg-gray-200 rounded-b-none"}`}
@@ -29,20 +30,48 @@ const GroupOverview = ({ groupDetail, group, navigate }) => {
       </div>
       <div className="ml-2">
         <div className="text-lg">{group?.groupName}</div>
-        {group?.netBalance === 0 ? (
+        {Number(group?.netBalance) === 0 ? (
           <div className="text-sm text-gray-800">All settled up</div>
-        ) : group?.netBalance < 0 ? (
-          <div className="text-sm text-gray-800">
-            You owe Rs {group?.netBalance} overall
+        ) : Number(group?.netBalance) < 0 ? (
+          <div className="text-sm">
+            You owe{" "}
+            <span className="text-orange-600">
+              Rs {Math.abs(Number(group?.netBalance))}
+            </span>{" "}
+            overall
           </div>
         ) : (
-          <div className="text-sm text-gray-800">
-            You are owed Rs {group?.netBalance} overall
+          <div className="text-sm ">
+            You are owed{" "}
+            <span className="text-green-400">Rs {group?.netBalance}</span>{" "}
+            overall
           </div>
         )}
         <ul className="list-disc list-inside text-xs text-gray-500">
-          <li>You owe Pratik Rs 400</li>
-          <li>Pratik owe's you Rs 400 </li>
+          {balance?.oweDetails?.map((owe) => {
+            if (owe.amount === 0) return;
+            if (owe.amount > 0) {
+              return (
+                <li key={owe?._id}>
+                  {owe?.name} owes{" "}
+                  <span className="text-green-400">
+                    Rs {Number(owe?.amount).toFixed(2)}
+                  </span>{" "}
+                  to You
+                </li>
+              );
+            }
+
+            return (
+              <li key={owe?._id}>
+                You owes{" "}
+                <span className="text-orange-400">
+                  Rs {Math.abs(Number(owe?.amount).toFixed(2))}
+                </span>{" "}
+                to {owe?.name}
+              </li>
+            );
+          })}
         </ul>
       </div>
     </div>
