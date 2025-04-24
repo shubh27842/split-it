@@ -12,7 +12,7 @@ const Signup = () => {
       name,
       email,
       password,
-      mobile: "7894561320",
+      mobile: Math.random(),
     });
   };
 

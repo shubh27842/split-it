@@ -186,6 +186,46 @@ exports.getExpenseSummaryByGroup = async (req, res) => {
   }
 };
 
+exports.getOweDetailsForMember = async (req, res) => {
+    try{
+        const { groupId, memberId } = req.query;
+        if (!groupId) return res.status(400).json({ message: "Request Invalid" });
+        const group = await Group.findById(groupId).populate({
+            path: "members",
+            select: "name email",
+          });
+        const expenses = await Expense.find({ group: groupId })
+        .populate([
+          {
+            path: "paidBy",
+            select: "name email",
+          },
+          {
+            path: "participants",
+            select: "name email",
+          },
+        ])
+        .sort({ createdAt: -1 });
+
+        let netBalance = 0;
+        expenses?.forEach((expense) => {
+          const eachShare =  Number(Number(expense.amount / expense.participants.length).toFixed(2));
+          if (expense.paidBy._id.equals(memberId)) {
+            netBalance += expense.amount - eachShare;
+          } else {
+            netBalance -= eachShare;
+          }
+        });
+        res.status(200).json({
+            success: true,
+            netBalance: Number(netBalance).toFixed(2),
+            balance: calculateOweDetailsForMember(expenses, memberId, group?.members),
+        });
+    }catch(err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+}
+
 
 const calculateOweDetailsForMember = (expenses, memberId, grpMembers) => {
     let balances = {};
@@ -200,8 +240,7 @@ const calculateOweDetailsForMember = (expenses, memberId, grpMembers) => {
         };
       });
     expenses.forEach((expense) => {
-        const splitAmount = expense.amount / expense.participants.length;
-
+        const splitAmount = Number(Number(expense.amount / expense.participants.length).toFixed(2));
         // Add amount to payer
         balances[expense.paidBy._id].netBalance += expense.amount;
   
@@ -210,13 +249,13 @@ const calculateOweDetailsForMember = (expenses, memberId, grpMembers) => {
           balances[member._id].netBalance -= splitAmount;
           balances[expense.paidBy._id].oweDetails = balances[expense.paidBy._id].oweDetails.map((owe) => {
               if(owe._id.equals(member._id)){
-                  return { ...owe, amount: owe.amount + splitAmount }
+                  return { ...owe, amount: Number(Number(owe.amount + splitAmount).toFixed(2)) }
               }
               return owe;
           })
           balances[member._id].oweDetails = balances[member._id].oweDetails.map((owe) => {
               if(owe._id.equals(expense.paidBy._id)){
-                  return { ...owe, amount: owe.amount - splitAmount }
+                  return { ...owe, amount: Number(Number(owe.amount - splitAmount).toFixed(2)) }
               }
               return owe;
           })

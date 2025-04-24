@@ -13,8 +13,8 @@ const CustomModal = ({ isOpen, onClose, children }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50 bg-gray-800/50">
-      <div className="bg-white py-4 px-8 rounded-2xl shadow-lg max-w-lg w-full mx-4 relative animate-fade-in">
+    <div className="fixed inset-0 flex items-center justify-center z-50 bg-gray-800/50 ">
+      <div className="bg-white py-4 px-8 rounded-2xl shadow-lg max-w-lg w-full max-h-[80%] mx-4 relative animate-fade-in overflow-y-auto scrollbar overflow ">
         <button
           onClick={onClose}
           className="absolute top-3 right-3 text-gray-600 hover:text-gray-900 text-xl cursor-pointer"

@@ -23,7 +23,7 @@ const BalanceModal = ({ isOpen, setIsOpen, groupId }) => {
     <CustomModal isOpen={isOpen} onClose={() => setIsOpen(false)}>
       <div className="p-2">
         <h2 className="text-xl font-semibold">Balances</h2>
-        {balances.map((balance) => {
+        {/* {balances.map((balance) => {
           return (
             <div
               key={balance?.email}
@@ -48,6 +48,7 @@ const BalanceModal = ({ isOpen, setIsOpen, groupId }) => {
               )}
               <ul className="list-disc ml-8 text-sm">
                 {balance?.oweDetails?.map((owe) => {
+                  if (owe.amount === 0) return null;
                   if (owe.amount > 0) {
                     return (
                       <li key={owe?._id}>
@@ -67,6 +68,58 @@ const BalanceModal = ({ isOpen, setIsOpen, groupId }) => {
                         Rs {Math.abs(Number(owe?.amount).toFixed(2))}
                       </span>{" "}
                       to {owe?.name}
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          );
+        })} */}
+                {balances.map((balance) => {
+          return (
+            <div
+              key={balance?.email}
+              className="border-2 my-2 p-1 rounded-sm border-gray-400 text-gray-800"
+            >
+              {balance?.netBalance > 0 ? (
+                <div>
+                  {balance?.name} Ko itne waps milege{" "}
+                  <span className="text-green-400">
+                    Rs {Number(balance?.netBalance).toFixed(2)}
+                  </span>{" "}
+                  in total
+                </div>
+              ) : (
+                <div>
+                  {balance?.name} ko itne dene hai{" "}
+                  <span className="text-orange-400">
+                    Rs {Math.abs(Number(balance?.netBalance).toFixed(2))}
+                  </span>{" "}
+                  pure
+                </div>
+              )}
+              <ul className="list-disc ml-8 text-sm">
+                {balance?.oweDetails?.map((owe) => {
+                  if (owe.amount === 0) return null;
+                  if (owe.amount > 0) {
+                    return (
+                      <li key={owe?._id}>
+                        {owe?.name} dega{" "}
+                        <span className="text-green-400">
+                          Rs {Number(owe?.amount).toFixed(2)}
+                        </span>{" "}
+                         {balance?.name} ko
+                      </li>
+                    );
+                  }
+
+                  return (
+                    <li key={owe?._id}>
+                      {balance?.name} dega{" "}
+                      <span className="text-orange-400">
+                        Rs {Math.abs(Number(owe?.amount).toFixed(2))}
+                      </span>{" "}
+                       {owe?.name} ko
                     </li>
                   );
                 })}
