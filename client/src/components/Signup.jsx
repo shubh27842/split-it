@@ -1,19 +1,36 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router";
 import { apiEndPoint } from "../utils/api";
+import { login } from "../../../server/controllers/authController";
+import { toast } from "react-toastify";
 
 const Signup = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   const handleSignup = async () => {
-    const res = await axios.post(`${apiEndPoint}/auth/register`, {
-      name,
-      email,
-      password,
-      mobile: Math.random(),
-    });
+    try {
+      const res = await axios.post(`${apiEndPoint}/auth/register`, {
+        name,
+        email,
+        password,
+        mobile: Math.random(),
+      });
+      console.log(res);
+
+      if (res.status === 200) {
+        login(res.data.user);
+        localStorage.setItem("authToken", res?.data?.token);
+        localStorage.setItem("authUser", JSON.stringify(res?.data?.user));
+        navigate("/");
+        toast.success("Registration successful");
+      }
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
@@ -64,7 +81,10 @@ const Signup = () => {
         </button>
         <div>
           Already registered?
-          <button className="underline cursor-pointer text-blue-800 hover:text-blue-400 ml-2">
+          <button
+            onClick={() => navigate("/login")}
+            className="underline cursor-pointer text-blue-800 hover:text-blue-400 ml-2"
+          >
             Login here
           </button>
         </div>

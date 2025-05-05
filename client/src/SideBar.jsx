@@ -64,7 +64,7 @@ const SideBar = () => {
         <span className="ml-4 hidden sm:block">Groups</span>
       </div>
       <div
-        className={tabClass("friends")}
+        className={tabClass("friends") + " hidden"}
         onClick={() => handleTabSelection("friends")}
       >
         <svg

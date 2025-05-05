@@ -3,6 +3,7 @@ import SideBar from "./SideBar";
 import NavBar from "./NavBar";
 import { AppContext } from "./context/AppContext";
 import { Outlet, useNavigate } from "react-router";
+import { ToastContainer } from "react-toastify";
 
 const AppLayout = () => {
   const { store, login } = useContext(AppContext);
@@ -35,6 +36,17 @@ const AppLayout = () => {
           </div>
         </div>
       </div>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </div>
   );
 };

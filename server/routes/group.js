@@ -1,5 +1,5 @@
 const express = require('express');
-const { createGroup, updateGroup, getGroupsByUser, deleteGroup, getGroupById, getExpenseSummaryByGroup, getOweDetailsForMember } = require('../controllers/groupController');
+const { createGroup, updateGroup, getGroupsByUser, deleteGroup, getGroupById, getExpenseSummaryByGroup, getOweDetailsForMember, getDashboard } = require('../controllers/groupController');
 const { protect } = require('../middleware/auth');
 const { settleUp } = require('../controllers/settlementController');
 
@@ -13,5 +13,6 @@ router.delete('/deleteGroup/:id', protect, deleteGroup);
 router.get('/getBalanceSummary', protect, getExpenseSummaryByGroup);
 router.get('/getOweDetailsForUser', protect, getOweDetailsForMember);
 router.post('/settleup', protect, settleUp);
+router.get('/getDashboardData', protect, getDashboard);
 
 module.exports = router;

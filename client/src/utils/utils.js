@@ -19,3 +19,23 @@ export const borrowLentText = (loggedInUser, paidBy, participants, amount) => {
     return <div className="text-orange-600">You borrowed Rs {borrowed}</div>;
   }
 };
+
+export const getCombinedExpensesAndSettlements = (
+  expenses = [],
+  settlements = []
+) => {
+  const formattedExpenses = expenses?.map((expense) => ({
+    ...expense,
+    type: "expense",
+  }));
+  const formattedSettlements = settlements?.map((settlement) => ({
+    ...settlement,
+    type: "settlement",
+  }));
+  const combined = [...formattedExpenses, ...formattedSettlements];
+  const res = combined.sort(
+    (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+  );
+  console.log("RECEIVED EXPENSES", res);
+  return res;
+};

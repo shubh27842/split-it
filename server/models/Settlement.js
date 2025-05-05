@@ -20,7 +20,7 @@ const SettlementSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
-  settledAt: {
+  createdAt: {
     type: Date,
     default: Date.now
   }

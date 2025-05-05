@@ -1,5 +1,10 @@
 const Expense = require("../models/Expense");
 const Group = require("../models/Group");
+const Settlement = require("../models/Settlement");
+const {
+  getAllGroupDetailsByUser,
+  calculateOweDetailsForMember,
+} = require("../service/groupService");
 
 exports.createGroup = async (req, res) => {
   try {
@@ -23,46 +28,8 @@ exports.getGroups = async (req, res) => {
 
 exports.getGroupsByUser = async (req, res) => {
   try {
-    const groups = await Group.find({ members: req.query.userId }).populate([
-        {
-            path: "groupOwner",
-            select: "name email",
-        },
-        {
-            path: "members",
-            select: "name email",
-        }
-    ]);
-    const modifiedGroups = await Promise.all(groups.map(async (group) => {
-        const expenses = await Expense.find({ group: group._id })
-        .populate([
-          {
-            path: "paidBy",
-            select: "name email",
-          },
-          {
-            path: "participants",
-            select: "name email",
-          },
-        ])
-        .sort({ createdAt: -1 });
-
-        let netBalance = 0;
-        expenses?.forEach((expense) => {
-          const eachShare = expense.amount / expense.participants.length;
-          if (expense.paidBy._id.equals(req.user._id)) {
-            netBalance += expense.amount - eachShare;
-          } else {
-            netBalance -= eachShare;
-          }
-        });
-        return{
-            ...group.toObject(),
-            netBalance: Number(netBalance).toFixed(2),
-            balance: calculateOweDetailsForMember(expenses, req.query.userId, group.members),
-        };
-    }));
-    res.status(200).json({success: true, groups: modifiedGroups});
+    const modifiedGroups = await getAllGroupDetailsByUser(req.query.userId);
+    res.status(200).json({ success: true, groups: modifiedGroups });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -91,7 +58,7 @@ exports.updateGroup = async (req, res) => {
   } catch (err) {
     res.status(5000).json({ error: err.message });
   }
-}; 
+};
 
 exports.deleteGroup = async (req, res) => {
   try {
@@ -133,11 +100,31 @@ exports.getGroupById = async (req, res) => {
       }
     });
 
+    const settlements = await Settlement.find({ groupId: req.query.groupId })
+      .populate([
+        {
+          path: "from",
+          select: "name email",
+        },
+        {
+          path: "to",
+          select: "name email",
+        },
+      ])
+      .sort({ settledAt: -1 });
+    settlements?.forEach((settle) => {
+      const amount = settle.amount;
+      if (settle.to.equals(req.user._id)) {
+        netBalance -= amount;
+      }
+    });
+
     res.status(200).json({
       success: true,
       group: {
         ...group.toObject(),
         expenses,
+        settlements,
         netBalance: Number(netBalance).toFixed(2),
       },
     });
@@ -172,9 +159,15 @@ exports.getExpenseSummaryByGroup = async (req, res) => {
         },
       ])
       .sort({ createdAt: -1 });
+    const settlements = await Settlement.find({ groupId });
     let balances = {};
     group.members.forEach((member) => {
-      balances[member._id] = calculateOweDetailsForMember(expenses, member._id, group.members);
+      balances[member._id] = calculateOweDetailsForMember(
+        expenses,
+        member._id,
+        group.members,
+        settlements
+      );
     });
 
     res.status(200).json({
@@ -187,80 +180,139 @@ exports.getExpenseSummaryByGroup = async (req, res) => {
 };
 
 exports.getOweDetailsForMember = async (req, res) => {
-    try{
-        const { groupId, memberId } = req.query;
-        if (!groupId) return res.status(400).json({ message: "Request Invalid" });
-        const group = await Group.findById(groupId).populate({
-            path: "members",
-            select: "name email",
-          });
-        const expenses = await Expense.find({ group: groupId })
-        .populate([
-          {
-            path: "paidBy",
-            select: "name email",
-          },
-          {
-            path: "participants",
-            select: "name email",
-          },
-        ])
-        .sort({ createdAt: -1 });
-
-        let netBalance = 0;
-        expenses?.forEach((expense) => {
-          const eachShare =  Number(Number(expense.amount / expense.participants.length).toFixed(2));
-          if (expense.paidBy._id.equals(memberId)) {
-            netBalance += expense.amount - eachShare;
-          } else {
-            netBalance -= eachShare;
-          }
-        });
-        res.status(200).json({
-            success: true,
-            netBalance: Number(netBalance).toFixed(2),
-            balance: calculateOweDetailsForMember(expenses, memberId, group?.members),
-        });
-    }catch(err) {
-        res.status(500).json({ success: false, message: err.message });
-    }
-}
-
-
-const calculateOweDetailsForMember = (expenses, memberId, grpMembers) => {
-    let balances = {};
-    grpMembers.forEach((member) => {
-        balances[member._id] = {
-          name: member.name,
-          email: member.email,
-          netBalance: 0,
-          oweDetails: grpMembers
-            ?.filter((m) => !m._id.equals(member._id))
-            .map((m) => ({ ...m.toObject(), amount: 0 })),
-        };
-      });
-    expenses.forEach((expense) => {
-        const splitAmount = Number(Number(expense.amount / expense.participants.length).toFixed(2));
-        // Add amount to payer
-        balances[expense.paidBy._id].netBalance += expense.amount;
-  
-        // Subtract amount from each member who owes
-        expense.participants.forEach((member) => {
-          balances[member._id].netBalance -= splitAmount;
-          balances[expense.paidBy._id].oweDetails = balances[expense.paidBy._id].oweDetails.map((owe) => {
-              if(owe._id.equals(member._id)){
-                  return { ...owe, amount: Number(Number(owe.amount + splitAmount).toFixed(2)) }
-              }
-              return owe;
-          })
-          balances[member._id].oweDetails = balances[member._id].oweDetails.map((owe) => {
-              if(owe._id.equals(expense.paidBy._id)){
-                  return { ...owe, amount: Number(Number(owe.amount - splitAmount).toFixed(2)) }
-              }
-              return owe;
-          })
-          });
+  try {
+    const { groupId, memberId } = req.query;
+    if (!groupId) return res.status(400).json({ message: "Request Invalid" });
+    const group = await Group.findById(groupId).populate({
+      path: "members",
+      select: "name email",
     });
-    
-    return balances[memberId];
-}
+    const expenses = await Expense.find({ group: groupId })
+      .populate([
+        {
+          path: "paidBy",
+          select: "name email",
+        },
+        {
+          path: "participants",
+          select: "name email",
+        },
+      ])
+      .sort({ createdAt: -1 });
+
+    let netBalance = 0;
+    expenses?.forEach((expense) => {
+      const eachShare = Number(
+        Number(expense.amount / expense.participants.length).toFixed(2)
+      );
+      if (expense.paidBy._id.equals(memberId)) {
+        netBalance += expense.amount - eachShare;
+      } else {
+        netBalance -= eachShare;
+      }
+    });
+
+    const settlements = await Settlement.find({ groupId });
+
+    settlements?.forEach((settle) => {
+      const amount = settle.amount;
+      if (settle.to.equals(req.user._id)) {
+        netBalance -= amount;
+      }
+    });
+
+    res.status(200).json({
+      success: true,
+      netBalance: Number(netBalance).toFixed(2),
+      balance: calculateOweDetailsForMember(
+        expenses,
+        memberId,
+        group?.members,
+        settlements
+      ),
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+exports.getDashboard = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const groups = await Group.find({ members: userId }).populate(
+      "members",
+      "name email"
+    );
+    let totalOwe = 0;
+    let totalOwed = 0;
+    let overallBalance = 0;
+    const groupWise = [];
+    const friendMap = {};
+    const modifiedGroups = await getAllGroupDetailsByUser(userId);
+
+    modifiedGroups.forEach((group) => {
+      const grpObj = {
+        groupId: group._id,
+        groupName: group.groupName,
+        balance: Number(group.netBalance),
+      };
+      groupWise.push(grpObj);
+      if (Number(group.netBalance) > 0) {
+        totalOwed += Number(group.netBalance);
+      } else {
+        totalOwe += Math.abs(Number(group.netBalance));
+      }
+      group.balance.oweDetails.map((owe) => {
+        const memberId = owe._id.toString();
+        if (!friendMap[memberId]) {
+          friendMap[memberId] = {
+            name: owe.name,
+            email: owe.email,
+            owe: 0,
+            owed: 0,
+            groupOwe: {},
+          };
+        }
+        if (owe.amount > 0) {
+          friendMap[memberId].owe += Number(owe.amount);
+          if (!friendMap[memberId].groupOwe[group._id]) {
+            friendMap[memberId].groupOwe[group._id] = {
+              groupName: group.groupName,
+              oweAmount: Number(owe.amount),
+            };
+          } else {
+            friendMap[memberId].groupOwe[group._id].oweAmount += Number(
+              owe.amount
+            );
+          }
+        } else {
+          friendMap[memberId].owed += Math.abs(Number(owe.amount));
+          if (!friendMap[memberId].groupOwe[group._id]) {
+            friendMap[memberId].groupOwe[group._id] = {
+              groupName: group.groupName,
+              owedAmount: Math.abs(Number(owe.amount)),
+            };
+          } else {
+            friendMap[memberId].groupOwe[group._id].owedAmount += Math.abs(
+              Number(owe.amount)
+            );
+          }
+        }
+      });
+    });
+    res.status(200).json({
+      success: true,
+      data: {
+        overallBalance: Number(Number(totalOwed - totalOwe).toFixed(2)),
+        totalOwe,
+        totalOwed,
+        groupWise,
+        friendWise: friendMap,
+        // friendWise
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};

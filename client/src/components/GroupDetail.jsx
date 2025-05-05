@@ -10,6 +10,7 @@ import CustomMultiSelect from "./CustomMultiSelect.jsx";
 import ExpenseModal from "./Modals/ExpenseModal.jsx";
 import BalanceModal from "./Modals/BalanceModal.jsx";
 import SettleUpModal from "./Modals/SettleUpModal.jsx";
+import { getCombinedExpensesAndSettlements } from "../utils/utils.js";
 
 const GroupDetail = () => {
   const { groupId } = useParams();
@@ -46,6 +47,13 @@ const GroupDetail = () => {
 
   const handleModalOpen = () => {
     setModalOpen(true);
+    setExpense({
+      expenseName: "",
+      amount: 0,
+      paidBy: store?.user?.id,
+      participants: [],
+      group: groupId,
+    });
   };
 
   const handleBalanceModal = async () => {
@@ -84,8 +92,11 @@ const GroupDetail = () => {
         </div>
       ) : (
         <div className="border-2 border-gray-400 p-1 sm:p-4 rounded-b-lg">
-          <div className="font-medium">Febraury, 2025</div>
-          {group?.expenses?.map((expense, index) => {
+          {/* <div className="font-medium">Febraury, 2025</div> */}
+          {getCombinedExpensesAndSettlements(
+            group?.expenses,
+            group?.settlements
+          )?.map((expense, index) => {
             return (
               <ExpenseDetail
                 key={expense._id}

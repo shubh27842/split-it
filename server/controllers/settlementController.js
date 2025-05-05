@@ -30,7 +30,7 @@ exports.settleUp = async (req, res) => {
       amount: Number(amount)
     });
 
-    res.status(201).json({
+    res.status(200).json({
       success: true,
       message: "Settlement recorded successfully.",
       data: newSettlement

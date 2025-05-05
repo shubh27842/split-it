@@ -10,8 +10,8 @@ const ExpenseDetail = ({ index, data, handleRefresh }) => {
   const [viewModal, setViewModal] = useState(false);
   const [modalType, setModalType] = useState("view");
   const [expense, setExpense] = useState(data);
-
-  return (
+  console.log("ExpenseDetail", data);
+  return data.type === "expense" ? (
     <div
       className={`grid grid-cols-5 p-1 sm:p-2 text-xs sm:text-base ${index % 2 ? "" : "bg-gray-100"}`}
     >
@@ -91,6 +91,10 @@ const ExpenseDetail = ({ index, data, handleRefresh }) => {
         type={modalType}
         handleRefresh={handleRefresh}
       />
+    </div>
+  ) : (
+    <div className="indent-4 bg-gray-200 py-2 text-gray-800 text-sm">
+      {data?.from?.name} paid Rs {data?.amount} to {data?.to?.name}
     </div>
   );
 };

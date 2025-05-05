@@ -74,7 +74,10 @@ const Login = () => {
           </button>
           <div>
             New User?
-            <button className="underline cursor-pointer text-blue-800 hover:text-blue-400 ml-2">
+            <button
+              onClick={() => navigate("/register")}
+              className="underline cursor-pointer text-blue-800 hover:text-blue-400 ml-2"
+            >
               Register here
             </button>
           </div>
