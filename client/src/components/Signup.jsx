@@ -1,14 +1,15 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router";
 import { apiEndPoint } from "../utils/api";
-import { login } from "../../../server/controllers/authController";
 import { toast } from "react-toastify";
+import { AppContext } from "../context/AppContext";
 
 const Signup = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { login } = useContext(AppContext);
   const navigate = useNavigate();
 
   const handleSignup = async () => {
