@@ -15,7 +15,7 @@ axios.defaults.headers.common["Authorization"] =
 
 const App = () => {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/">
       <AppContextProvider>
         <Routes>
           <Route path="/" element={<AppLayout />}>
