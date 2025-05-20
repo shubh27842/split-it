@@ -53,17 +53,25 @@ const Groups = () => {
           </span>
         </div>
       </div>
-      <div className="border-2 border-gray-400 rounded-b-lg p-2 sm:p-4 grid grid-cols-1 sm:grid-cols-2 gap-4 mb-12">
-        {groups.map((group) => {
-          return (
-            <GroupOverview
-              key={group._id}
-              group={group}
-              // onClick={() => navigate(`/group/${group._id}`)}
-              navigate={navigate}
-            />
-          );
-        })}
+      <div className="border-gray-400 rounded-b-lg p-2 sm:p-4  mb-12 bg-gray-200">
+        {groups.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {groups.map((group) => {
+              return (
+                <GroupOverview
+                  key={group._id}
+                  group={group}
+                  // onClick={() => navigate(`/group/${group._id}`)}
+                  navigate={navigate}
+                />
+              );
+            })}
+          </div>
+        ) : (
+          <div className="text-center text-gray-400">
+            No groups found. Create a new group to get started!
+          </div>
+        )}
       </div>
     </div>
   );

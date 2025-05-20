@@ -1,14 +1,14 @@
 import PropTypes from "prop-types";
 import React from "react";
-// import { useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 
-const GroupOverview = ({ groupDetail, group = { balance: {} }, navigate }) => {
-  // const navigate = useNavigate();
+const GroupOverview = ({ groupDetail, group = { balance: {} } }) => {
+  const navigate = useNavigate();
   const { balance } = group;
   return (
     <div
-      className={`flex border border-gray-400 rounded-lg p-1 sm:p-2 ${groupDetail && "bg-gray-200 rounded-b-none"}`}
-      onClick={() => navigate(`/group/${group._id}`)}
+      className={`flex shadow-md bg-white rounded-lg p-1 sm:p-2 ${groupDetail && "border-2 border-gray-400 shadow-none rounded-b-none"}`}
+      onClick={() => !groupDetail && navigate(`/group/${group._id}`)}
     >
       <div
         className={`w-20 h-20 rounded-md flex justify-center items-center ${groupDetail ? "bg-violet-200" : "bg-gray-200"}`}

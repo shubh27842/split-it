@@ -37,12 +37,12 @@ const NavBar = () => {
       <div className="sm:mr-10 mr-0">
         {user ? (
           <div className="flex items-baseline">
-            <div className="text-gray-100 mr-10 text-lg">
+            <div className="text-gray-100 mr-5 sm:mr-10 text-sm sm:text-lg">
               Welcome, {user?.name}
             </div>
             <div
               onClick={() => handleLogout()}
-              className="bg-gray-100 text-lg rounded-lg px-4 py-1 sm:py-2 cursor-pointer hover:bg-gray-200"
+              className="bg-gray-100 text-sm sm:text-lg rounded-lg px-4 py-1 sm:py-2 cursor-pointer hover:bg-gray-200"
             >
               Logout
             </div>

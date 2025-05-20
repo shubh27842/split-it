@@ -92,7 +92,7 @@ const Dashboard = () => {
             >
               Create Group
             </button>
-            <button className={lightBtnMd}>Settle up</button>
+            <button disabled={true} className={lightBtnMd}>Settle up</button>
           </div>
         </div>
         <div className="flex justify-around py-3">
@@ -123,14 +123,27 @@ const Dashboard = () => {
       </div>
       <div className=" bg-gray-200 mt-2 rounded-b-lg h-full flex gap-2 justify-between px-2 sm:px-10 py-2 sm:py-5 w-full">
         <div className="w-full ">
-          <div className="text-lg">Friends whom you owe or they owe you.</div>
-          <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-6">
-            {Object.keys(data?.friendWise || {})?.map((friendId) => {
-              return (
-                <OweDetail key={friendId} data={data?.friendWise[friendId]} />
-              );
-            })}
-          </div>
+          {Object.keys(data?.friendWise || {}).length === 0 ? (
+            <div className="text-center text-gray-400">
+              No friends added yet. Start adding friends to your group.
+            </div>
+          ) : (
+            <>
+              <div className="text-lg">
+                Friends whom you owe or they owe you.
+              </div>
+              <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-6">
+                {Object.keys(data?.friendWise || {})?.map((friendId) => {
+                  return (
+                    <OweDetail
+                      key={friendId}
+                      data={data?.friendWise[friendId]}
+                    />
+                  );
+                })}
+              </div>
+            </>
+          )}
         </div>
         {/* <div className="w-full sm:w-[50%]">
           <div className="text-lg">You Owed</div>
